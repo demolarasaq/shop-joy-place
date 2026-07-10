@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Gavel, LogOut, User } from "lucide-react";
+import { Gavel, LogOut, Moon, Sun, User } from "lucide-react";
 import { useSession } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
+import { useTheme } from "@/hooks/use-theme";
 
 const nav = [
   { to: "/browse", label: "Browse" },
@@ -14,6 +15,7 @@ const nav = [
 export function SiteHeader() {
   const session = useSession();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
 
   const signOut = () => {
     api.auth.signOut();
@@ -47,6 +49,13 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggle}
+              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface-elevated/60 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             {session ? (
               <>
                 <Link
