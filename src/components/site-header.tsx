@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Gavel, LogOut, User } from "lucide-react";
+import { Gavel, LogOut, Moon, Sun, User } from "lucide-react";
 import { useSession } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
+import { useTheme } from "@/hooks/use-theme";
 
 const nav = [
   { to: "/browse", label: "Browse" },
