@@ -57,7 +57,7 @@ export function SiteHeader() {
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
             {session ? (
-              <></>
+              <>
                 <Link
                   to="/dashboard"
                   className="hidden items-center gap-2 rounded-lg border border-border bg-surface-elevated/60 px-3 py-2 text-sm sm:inline-flex"
