@@ -4,7 +4,7 @@ import { useSession } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
 
 const nav = [
-  { to: "/", label: "Home" },
+  { to: "/browse", label: "Browse" },
   { to: "/how-it-works", label: "How it works" },
   { to: "/trust", label: "Trust & safety" },
   { to: "/sellers", label: "For sellers" },
