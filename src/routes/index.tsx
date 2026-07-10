@@ -55,10 +55,10 @@ function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/"
+              to="/browse"
               className="bg-gradient-primary inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-transform hover:-translate-y-0.5"
             >
-              Get early access <ArrowRight className="h-4 w-4" />
+              Browse live auctions <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/how-it-works"
