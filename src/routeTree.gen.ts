@@ -14,6 +14,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SellersRouteImport } from './routes/sellers'
 import { Route as HubsRouteImport } from './routes/hubs'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TrustRoute = TrustRouteImport.update({
@@ -41,6 +43,16 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
   path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +61,8 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/how-it-works': typeof HowItWorksRoute
   '/hubs': typeof HubsRoute
   '/sellers': typeof SellersRoute
@@ -57,6 +71,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/how-it-works': typeof HowItWorksRoute
   '/hubs': typeof HubsRoute
   '/sellers': typeof SellersRoute
@@ -66,6 +82,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/how-it-works': typeof HowItWorksRoute
   '/hubs': typeof HubsRoute
   '/sellers': typeof SellersRoute
@@ -76,16 +94,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/dashboard'
     | '/how-it-works'
     | '/hubs'
     | '/sellers'
     | '/sitemap.xml'
     | '/trust'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/how-it-works' | '/hubs' | '/sellers' | '/sitemap.xml' | '/trust'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/how-it-works'
+    | '/hubs'
+    | '/sellers'
+    | '/sitemap.xml'
+    | '/trust'
   id:
     | '__root__'
     | '/'
+    | '/auth'
+    | '/dashboard'
     | '/how-it-works'
     | '/hubs'
     | '/sellers'
@@ -95,6 +125,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
   HowItWorksRoute: typeof HowItWorksRoute
   HubsRoute: typeof HubsRoute
   SellersRoute: typeof SellersRoute
@@ -139,6 +171,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -151,6 +197,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
   HowItWorksRoute: HowItWorksRoute,
   HubsRoute: HubsRoute,
   SellersRoute: SellersRoute,
