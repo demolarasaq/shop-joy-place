@@ -40,15 +40,27 @@ export type EscrowStatus =
   | "disputed"
   | "refunded";
 
-export interface EscrowTransaction {
+export interface Order {
   id: string;
   listingId: string;
-  amountNaira: number;
+  listingTitle: string;
+  buyerId: string;
+  sellerId: string;
+  sellerName: string;
+  hubCity: string;
+  winningBid: number;
   buyerProtectionFee: number;
+  totalDue: number;
   status: EscrowStatus;
+  virtualAccountBank: string;
+  virtualAccountNumber: string;
+  virtualAccountName: string;
+  createdAt: string;
   fundedAt?: string;
-  releaseDueAt?: string;
-  virtualAccountRef: string;
+  releaseDueAt?: string; // ISO — 24h after funded
+  releasedAt?: string;
+  disputedAt?: string;
+  disputeReason?: string;
 }
 
 export interface Hub {

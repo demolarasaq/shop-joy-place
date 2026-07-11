@@ -1,9 +1,10 @@
 // Mock API client. Same surface the real Python backend will expose.
 // Swap the bodies of these functions for `fetch(...)` calls when the backend is live.
 
-import type { Hub, Listing, Session, UserRole } from "./types";
+import type { Hub, Listing, Order, Session, UserRole } from "./types";
 
 const SESSION_KEY = "sabihub.session.v1";
+const ORDERS_KEY = "sabihub.orders.v1";
 
 function readSession(): Session | null {
   if (typeof window === "undefined") return null;
@@ -74,7 +75,96 @@ export const api = {
       return mockHubs;
     },
   },
+
+  orders: {
+    async list(): Promise<Order[]> {
+      return readOrders().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    },
+    async get(id: string): Promise<Order | undefined> {
+      return readOrders().find((o) => o.id === id);
+    },
+    async getByListing(listingId: string, buyerId: string): Promise<Order | undefined> {
+      return readOrders().find((o) => o.listingId === listingId && o.buyerId === buyerId);
+    },
+    async createFromListing(listingId: string, buyerId: string): Promise<Order> {
+      const existing = await api.orders.getByListing(listingId, buyerId);
+      if (existing) return existing;
+      const listing = await api.listings.get(listingId);
+      if (!listing) throw new Error("Listing not found");
+      const fee = Math.round(listing.currentBid * 0.03);
+      const order: Order = {
+        id: "O-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
+        listingId: listing.id,
+        listingTitle: listing.title,
+        buyerId,
+        sellerId: listing.sellerId,
+        sellerName: listing.sellerName,
+        hubCity: listing.hubCity,
+        winningBid: listing.currentBid,
+        buyerProtectionFee: fee,
+        totalDue: listing.currentBid + fee,
+        status: "awaiting_payment",
+        virtualAccountBank: "Providus Bank",
+        virtualAccountNumber: "9" + Math.floor(100000000 + Math.random() * 899999999).toString(),
+        virtualAccountName: "SABIHUB / " + listing.id,
+        createdAt: new Date().toISOString(),
+      };
+      const all = readOrders();
+      all.push(order);
+      writeOrders(all);
+      return order;
+    },
+    async markPaid(id: string): Promise<Order> {
+      return updateOrder(id, (o) => {
+        if (o.status !== "awaiting_payment") return o;
+        const now = new Date();
+        return {
+          ...o,
+          status: "inspection_window",
+          fundedAt: now.toISOString(),
+          releaseDueAt: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
+        };
+      });
+    },
+    async release(id: string): Promise<Order> {
+      return updateOrder(id, (o) =>
+        o.status === "inspection_window"
+          ? { ...o, status: "released", releasedAt: new Date().toISOString() }
+          : o,
+      );
+    },
+    async dispute(id: string, reason: string): Promise<Order> {
+      return updateOrder(id, (o) =>
+        o.status === "inspection_window"
+          ? { ...o, status: "disputed", disputedAt: new Date().toISOString(), disputeReason: reason }
+          : o,
+      );
+    },
+  },
 };
+
+function readOrders(): Order[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(ORDERS_KEY);
+    return raw ? (JSON.parse(raw) as Order[]) : [];
+  } catch {
+    return [];
+  }
+}
+function writeOrders(orders: Order[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  window.dispatchEvent(new Event("sabihub:orders"));
+}
+function updateOrder(id: string, fn: (o: Order) => Order): Order {
+  const all = readOrders();
+  const idx = all.findIndex((o) => o.id === id);
+  if (idx === -1) throw new Error("Order not found");
+  all[idx] = fn(all[idx]);
+  writeOrders(all);
+  return all[idx];
+}
 
 const mockHubs: Hub[] = [
   { id: "h1", city: "Lagos", name: "Yaba Hub", address: "Herbert Macaulay Way" },

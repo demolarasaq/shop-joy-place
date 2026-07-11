@@ -208,7 +208,19 @@ function ListingDetail() {
                     account. Released if you don't win, forfeited if you win and don't pay.
                   </p>
                 </div>
-              ) : (
+              ) : null}
+
+              <div className="mt-4 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3 text-xs">
+                <div className="text-muted-foreground">Demo shortcut — jump to escrow</div>
+                <Link
+                  to="/checkout/$listingId"
+                  params={{ listingId: listing.id }}
+                  className="mt-1 inline-flex items-center gap-1 font-medium text-primary-glow hover:text-primary"
+                >
+                  Simulate winning → Checkout →
+                </Link>
+              </div>
+
                 <div className="mt-6">
                   <label className="text-xs text-muted-foreground">
                     Your bid (min {formatNaira(minBid)})
@@ -234,7 +246,7 @@ function ListingDetail() {
                     <p className="mt-2 text-xs text-destructive">This auction has ended.</p>
                   )}
                 </div>
-              )}
+
             </div>
 
             <div className="rounded-2xl border border-border bg-surface p-5 text-sm">
