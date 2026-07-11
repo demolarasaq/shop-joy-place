@@ -94,8 +94,8 @@ function Dashboard() {
 function tilesFor(role: string) {
   const buyer = [
     { title: "Browse auctions", desc: "See what's live and place a bid.", icon: ShoppingBag, to: "/browse" as const },
-    { title: "My bids", desc: "Track your active and won auctions.", icon: Gavel, to: "/dashboard" as const },
-    { title: "Escrow & pickup", desc: "Held funds, inspection windows, OTP.", icon: ShieldCheck, to: "/dashboard" as const },
+    { title: "My orders", desc: "Escrow, inspection windows, and hub pickup.", icon: ShieldCheck, to: "/orders" as const },
+    { title: "My bids", desc: "Track your active and won auctions.", icon: Gavel, to: "/browse" as const },
   ];
   const seller = [
     { title: "My listings", desc: "Draft, active, sold. Withdraw any time.", icon: ClipboardList, to: "/dashboard" as const },
