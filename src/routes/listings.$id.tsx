@@ -246,7 +246,7 @@ function ListingDetail() {
                     <p className="mt-2 text-xs text-destructive">This auction has ended.</p>
                   )}
                 </div>
-              )}
+
             </div>
 
             <div className="rounded-2xl border border-border bg-surface p-5 text-sm">
