@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   BadgeCheck,
-  Camera,
   Gavel,
   KeyRound,
   Landmark,
   MapPin,
+  PlayCircle,
   ShieldCheck,
   Timer,
 } from "lucide-react";
