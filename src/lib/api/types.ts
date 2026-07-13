@@ -29,7 +29,9 @@ export interface Listing {
   endsAt: string; // ISO
   status: ListingStatus;
   hubCity: string;
-  coverColor: string; // placeholder hue while no image backend
+  coverColor: string; // placeholder hue used as image fallback
+  images: string[]; // gallery — first is the cover
+  videoUrl?: string; // inventory-check walkthrough video
 }
 
 export type EscrowStatus =
