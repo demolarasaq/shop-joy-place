@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   BadgeCheck,
-  Camera,
   Gavel,
   KeyRound,
   Landmark,
   MapPin,
+  PlayCircle,
   ShieldCheck,
   Timer,
 } from "lucide-react";
@@ -112,19 +112,8 @@ function ListingDetail() {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <div
-              className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl surface-glass"
-              style={{
-                background: `linear-gradient(135deg, oklch(0.45 0.18 ${listing.coverColor.split(" ")[0]}) 0%, oklch(0.22 0.05 265) 100%)`,
-              }}
-            >
-              <div className="absolute inset-0 grid place-items-center opacity-30">
-                <Camera className="h-16 w-16 text-primary-foreground" />
-              </div>
-              <div className="absolute bottom-4 left-4 rounded-full bg-background/70 px-3 py-1 text-xs backdrop-blur">
-                Inventory video + serial photo on file
-              </div>
-            </div>
+            <MediaGallery listing={listing} />
+
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <TrustTile icon={ShieldCheck} label="Escrow" value="Bank-held" tone="trust" />
@@ -272,6 +261,76 @@ function ListingDetail() {
       </section>
 
       <SiteFooter />
+    </div>
+  );
+}
+
+function MediaGallery({ listing }: { listing: import("@/lib/api/types").Listing }) {
+  const items: { kind: "image" | "video"; src: string }[] = [
+    ...listing.images.map((src) => ({ kind: "image" as const, src })),
+    ...(listing.videoUrl ? [{ kind: "video" as const, src: listing.videoUrl }] : []),
+  ];
+  const [active, setActive] = useState(0);
+  const current = items[active];
+
+  return (
+    <div>
+      <div
+        className="surface-glass relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-black"
+        style={{
+          background: `linear-gradient(135deg, oklch(0.45 0.18 ${listing.coverColor.split(" ")[0]}) 0%, oklch(0.22 0.05 265) 100%)`,
+        }}
+      >
+        {current?.kind === "image" ? (
+          <img
+            src={current.src}
+            alt={listing.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : current ? (
+          <video
+            key={current.src}
+            src={current.src}
+            controls
+            playsInline
+            poster={listing.images[0]}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : null}
+        <div className="absolute bottom-4 left-4 rounded-full bg-background/80 px-3 py-1 text-xs backdrop-blur">
+          Inventory video + serial photo on file
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-4 gap-2">
+        {items.map((it, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            className={
+              "relative aspect-[4/3] overflow-hidden rounded-xl border transition " +
+              (i === active
+                ? "border-primary shadow-glow"
+                : "border-border opacity-80 hover:opacity-100")
+            }
+          >
+            {it.kind === "image" ? (
+              <img src={it.src} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <div className="relative h-full w-full">
+                <img
+                  src={listing.images[0]}
+                  alt=""
+                  className="h-full w-full object-cover opacity-70"
+                />
+                <div className="absolute inset-0 grid place-items-center bg-black/30">
+                  <PlayCircle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
