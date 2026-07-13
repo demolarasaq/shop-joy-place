@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { BadgeCheck, Gavel, MapPin, Timer } from "lucide-react";
+import { BadgeCheck, MapPin, PlayCircle, Timer } from "lucide-react";
 import type { Listing } from "@/lib/api/types";
 import { formatNaira } from "@/lib/format";
 import { useCountdown } from "@/hooks/use-countdown";
 
 export function ListingCard({ listing }: { listing: Listing }) {
   const t = useCountdown(listing.endsAt);
+  const cover = listing.images[0];
 
   return (
     <Link
@@ -19,18 +20,29 @@ export function ListingCard({ listing }: { listing: Listing }) {
           background: `linear-gradient(135deg, oklch(0.45 0.18 ${listing.coverColor.split(" ")[0]}) 0%, oklch(0.28 0.06 265) 100%)`,
         }}
       >
-        <div className="absolute inset-0 grid place-items-center opacity-30">
-          <Gavel className="h-12 w-12 text-primary-foreground" />
-        </div>
-        <div className="absolute top-3 left-3 rounded-full bg-background/70 px-2.5 py-1 text-[10px] font-medium text-foreground backdrop-blur">
+        {cover && (
+          <img
+            src={cover}
+            alt={listing.title}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/10" />
+        <div className="absolute top-3 left-3 rounded-full bg-background/80 px-2.5 py-1 text-[10px] font-medium text-foreground backdrop-blur">
           {listing.category}
         </div>
+        {listing.videoUrl && (
+          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-[10px] font-medium text-foreground backdrop-blur">
+            <PlayCircle className="h-3 w-3" /> Video
+          </div>
+        )}
         <div
           className={
             "absolute top-3 right-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium backdrop-blur " +
             (t.urgent
               ? "bg-destructive/80 text-destructive-foreground"
-              : "bg-background/70 text-foreground")
+              : "bg-background/80 text-foreground")
           }
         >
           <Timer className="h-3 w-3" /> {t.label}
