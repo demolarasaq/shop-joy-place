@@ -175,6 +175,12 @@ const mockHubs: Hub[] = [
   { id: "h6", city: "Kano", name: "Sabon Gari Hub", address: "Fagge District" },
 ];
 
+const SAMPLE_VIDEO =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+
+const img = (query: string, seed: number) =>
+  `https://images.unsplash.com/${query}?auto=format&fit=crop&w=1200&q=70&sig=${seed}`;
+
 const mockListings: Listing[] = [
   {
     id: "L-1001",
@@ -190,6 +196,12 @@ const mockListings: Listing[] = [
     status: "active",
     hubCity: "Lagos",
     coverColor: "280 60% 55%",
+    images: [
+      img("photo-1592286927505-1def25115558", 11),
+      img("photo-1695048133142-1a20484d2569", 12),
+      img("photo-1510557880182-3d4d3cba35a5", 13),
+    ],
+    videoUrl: SAMPLE_VIDEO,
   },
   {
     id: "L-1002",
@@ -205,6 +217,12 @@ const mockListings: Listing[] = [
     status: "active",
     hubCity: "Abuja",
     coverColor: "220 65% 55%",
+    images: [
+      img("photo-1606813907291-d86efa9b94db", 21),
+      img("photo-1607853202273-797f1c22a38e", 22),
+      img("photo-1622297845775-5ff3fef71d13", 23),
+    ],
+    videoUrl: SAMPLE_VIDEO,
   },
   {
     id: "L-1003",
@@ -220,6 +238,11 @@ const mockListings: Listing[] = [
     status: "active",
     hubCity: "Port Harcourt",
     coverColor: "155 40% 45%",
+    images: [
+      img("photo-1517336714731-489689fd1ca8", 31),
+      img("photo-1611186871348-b1ce696e52c9", 32),
+      img("photo-1541807084-5c52b6b3adef", 33),
+    ],
   },
   {
     id: "L-1004",
@@ -235,6 +258,12 @@ const mockListings: Listing[] = [
     status: "active",
     hubCity: "Lagos",
     coverColor: "310 55% 50%",
+    images: [
+      img("photo-1519183071298-a2962be96f83", 41),
+      img("photo-1502920917128-1aa500764cbd", 42),
+      img("photo-1495707902641-75cac588d2e9", 43),
+    ],
+    videoUrl: SAMPLE_VIDEO,
   },
   {
     id: "L-1005",
@@ -250,6 +279,12 @@ const mockListings: Listing[] = [
     status: "active",
     hubCity: "Abuja",
     coverColor: "45 70% 55%",
+    images: [
+      img("photo-1587836374828-4dbafa94cf0e", 51),
+      img("photo-1524592094714-0f0654e20314", 52),
+      img("photo-1548171915-e79a380a2a4b", 53),
+    ],
+    videoUrl: SAMPLE_VIDEO,
   },
   {
     id: "L-1006",
@@ -265,5 +300,11 @@ const mockListings: Listing[] = [
     status: "active",
     hubCity: "Ibadan",
     coverColor: "200 55% 50%",
+    images: [
+      img("photo-1508614589041-895b88991e3e", 61),
+      img("photo-1579829366248-204fe8413f31", 62),
+      img("photo-1473968512647-3e447244af8f", 63),
+    ],
+    videoUrl: SAMPLE_VIDEO,
   },
 ];
