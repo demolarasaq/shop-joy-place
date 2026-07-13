@@ -112,19 +112,8 @@ function ListingDetail() {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <div
-              className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl surface-glass"
-              style={{
-                background: `linear-gradient(135deg, oklch(0.45 0.18 ${listing.coverColor.split(" ")[0]}) 0%, oklch(0.22 0.05 265) 100%)`,
-              }}
-            >
-              <div className="absolute inset-0 grid place-items-center opacity-30">
-                <Camera className="h-16 w-16 text-primary-foreground" />
-              </div>
-              <div className="absolute bottom-4 left-4 rounded-full bg-background/70 px-3 py-1 text-xs backdrop-blur">
-                Inventory video + serial photo on file
-              </div>
-            </div>
+            <MediaGallery listing={listing} />
+
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <TrustTile icon={ShieldCheck} label="Escrow" value="Bank-held" tone="trust" />
