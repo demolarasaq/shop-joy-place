@@ -1,54 +1,68 @@
-# Trust-First Marketplace — Build Plan
+# Sabihub — Go-live Readiness Plan
 
-A mobile-first auction & marketplace app for Nigeria, built end-to-end in Lovable with all external integrations mocked. Purple / navy blue / deep green palette, modern NextUI-inspired feel.
+Current build covers Stages 0–3 (foundation, browse/auction, escrow/checkout, photos/videos, dark/light theme). Before a real public launch, the remaining work splits into three lanes: **Frontend completion**, **Backend integration**, and **Legal/operations**.
 
-## Guiding principles (from your docs)
-- Platform is a **coordination layer**: DB stores *statuses & references*, never raw NIN/BVN/biometric payloads (mocked as tokens).
-- **State machines** for Listing, Auction, EscrowTransaction, Shipment, Dispute — every transition logged.
-- **Tiered trust**: Tier 1 (browse/buy small), Tier 2 (sell / high-value bid), 30-day probation cap.
-- **0% seller commission**, revenue = Buyer Protection Fee at checkout.
-- **Bank-held escrow** (mocked virtual accounts) with 24-hour inspection window auto-release.
-- **Hub-based delivery** with OTP handoff (mocked).
+## 1. Frontend completion (needed for a credible live MVP)
 
-## Stage 0 — Foundation (this iteration)
-1. Design system in `src/styles.css` — purple primary, navy surfaces, deep green success/escrow-safe accent, oklch tokens, gradients, elevation, radii.
-2. Root layout, header w/ session-aware nav, footer, mobile bottom-nav.
-3. Marketing landing route `/` explaining the trust model (hero, how-it-works, trust pillars, hub map teaser, FAQ, CTA).
-4. Sitemap, robots, real head metadata.
+### Content & marketing pages still stubs
+- `/how-it-works` — exists as a route but is empty; should explain the 6-step flow already shown on the landing page.
+- `/trust` — empty route; should detail verification tiers, escrow mechanics, NDPA-safe data handling, and dispute process.
+- `/sellers` — empty route; should explain 0% commission, verification requirements, listing process, and hub drop-off.
+- Add a `/terms` or `/privacy` placeholder (required for trust and ad/compliance reviews).
 
-## Stage 1 — Auth & Verification (mocked)
-- Lovable Cloud on. `profiles` + `user_roles` (admin/ops/user) + separate `verifications`, `bank_accounts` tables.
-- Email/password auth, `/auth` route.
-- Tier 1 onboarding: phone + email + mock bank-account name-match.
-- Tier 2 upgrade flow: choose NIN or BVN → mock ₦500 charge screen → mock liveness capture (camera placeholder + fake score) → status = verified.
-- Probation banner (30 days, ₦100k cap) surfaced across app.
+### Seller-facing flows missing
+- Create listing form: title, category, reserve price, hub city, inventory video upload, serial/IMEI photo upload.
+- Seller dashboard: my listings (draft / active / sold), bids received, orders awaiting drop-off, payout status.
+- Listing state machine UI: draft → active → sold/withdrawn.
 
-## Stage 2 — Listings & Auctions
-- Seller flow: create listing → upload inventory video + serial photo (mocked storage) → reserve price → state machine (draft → active → sold/withdrawn).
-- Browse/search/filter, category pages, listing detail with countdown, bid history.
-- Bidding: bid-lock hold (mocked), current price, winning bidder, auto-close, penalty on forfeit.
+### Buyer-facing gaps
+- Real bid placement currently only sets local state; needs backend bid endpoint, bid-lock logic, and auto-close.
+- My bids page (dashboard tile links to `/browse` as a stub).
+- Order page shipment timeline: seller drop-off → courier batch → hub arrival → OTP pickup.
 
-## Stage 3 — Escrow & Checkout
-- Post-win checkout: shows Buyer Protection Fee breakdown, mock virtual account number + "I've paid" simulator.
-- EscrowTransaction state machine: awaiting_payment → funded → inspection_window → released/disputed/refunded.
-- 24-hour inspection countdown, "release now" and "open dispute" actions, auto-release job (simulated client-side + Cloud scheduled function stub).
+### Admin/Ops console
+- Verifications queue, escrow pipeline, disputes list, hub management, user freezes, audit log viewer.
 
-## Stage 4 — Hub Delivery & OTP
-- Hub directory (seeded Nigerian cities), seller drop-off flow, courier batch mock, buyer pickup with 6-digit OTP (hashed).
-- Shipment state machine + timeline UI on order page.
+### UX polish
+- Mobile bottom navigation (mentioned in original Stage 0 plan but not implemented).
+- Loading skeletons for browse/listing pages.
+- Empty states and error boundaries beyond the root 404/error pages.
+- Form validation with clear error messages.
+- Toast/sonner feedback for copy, bid, payment, dispute actions.
 
-## Stage 5 — Disputes & Admin/Ops Dashboard
-- Buyer/seller dispute form referencing the inventory video/serial photo.
-- Admin dashboard (role-gated): verifications queue, active auctions, escrow pipeline, hubs, disputes, account freezes, audit log viewer.
+## 2. Backend integration (you mentioned Python APIs later)
 
-## Technical notes
-- Stack: TanStack Start + Tailwind v4 + shadcn + TanStack Query + Lovable Cloud (Supabase under the hood).
-- All money, ID, OTP, bank, and courier calls go through a `src/lib/mocks/*` layer with clearly typed interfaces so real providers can drop in later.
-- Every state transition writes a row to a generic `state_transitions` table (actor, entity, from, to, reason, at) — matches your audit-trail requirement.
-- Idempotency keys on all mock webhook/OTP/escrow endpoints, per your architecture doc.
-- Roles stored in `user_roles` with `has_role()` security-definer function (never on profiles).
+The frontend already has a typed mock layer in `src/lib/api/client.ts`. To go live, swap it for real HTTP calls to your Python backend for:
 
-## What I'll build this turn if you approve
-Stage 0 only: design system + landing page + shell + SEO. Then we go stage-by-stage so you can steer at each step.
+- Authentication (email/OTP or passwordless) and session management.
+- Listings CRUD, search/filter, bidding, auction close.
+- Escrow: virtual account generation, payment webhook, 24-hour inspection window, release/dispute/refund.
+- Verification: NIN/BVN token exchange, liveness score, tier/probation status.
+- Hub network, shipment tracking, OTP generation/validation.
+- Admin operations and audit-log retrieval.
+- File storage for inventory videos and serial photos (e.g., S3/Supabase Storage / Cloudflare R2).
 
-Want me to proceed with Stage 0, or adjust scope/ordering first?
+Important: the current mock stores orders in `localStorage` and uses a fake role-picker. A real launch needs server-side sessions, RLS/database auth, and never trust client-side role flags.
+
+## 3. Legal / operations checklist (from your uploaded documents)
+
+- CAC business registration and tax identification.
+- NDPA compliance: privacy policy, consent flow, data-processing agreements with identity/payment partners.
+- Escrow partner: signed agreement with a CBN-licensed bank or payment provider.
+- Hub partner contracts with pickup shops/courier networks.
+- Terms of service, seller agreement, buyer protection policy.
+- Dispute resolution process and refund policy.
+- KYC/AML policy for high-value sellers/bidders.
+
+## Recommended next steps
+
+1. Finish the three stub marketing pages (`/how-it-works`, `/trust`, `/sellers`) and add `/privacy` + `/terms`.
+2. Build the seller listing creation flow and seller dashboard tiles.
+3. Add the shipment timeline and OTP pickup UI to orders.
+4. Build a lightweight admin console for verifications and disputes.
+5. Swap the mock API client for your Python backend endpoints.
+6. Run security scan, accessibility check, and mobile responsiveness pass before publishing.
+
+## Decision for you
+
+Do you want me to continue finishing the **frontend only** (steps 1–4) so the UI is complete and ready for your Python API, or do you want to pause here and start integrating the backend now?
