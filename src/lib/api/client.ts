@@ -68,6 +68,32 @@ export const api = {
     async get(id: string): Promise<Listing | undefined> {
       return mockListings.find((l) => l.id === id);
     },
+    async create(input: CreateListingInput): Promise<Listing> {
+      const session = readSession();
+      const listing: Listing = {
+        id: "L-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
+        sellerId: session?.userId ?? "mock-seller",
+        sellerName: session?.displayName ?? "Demo Seller",
+        sellerVerified: session?.verificationStatus === "verified",
+        title: input.title,
+        category: input.category,
+        reservePrice: input.reservePrice,
+        currentBid: input.reservePrice,
+        bidCount: 0,
+        endsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        status: input.publish ? "active" : "draft",
+        hubCity: input.hubCity,
+        coverColor: input.coverColor,
+        images: input.images,
+        videoUrl: input.videoUrl,
+      };
+      mockListings.push(listing);
+      window.dispatchEvent(new Event("sabihub:listings"));
+      return listing;
+    },
+    async bySeller(sellerId: string): Promise<Listing[]> {
+      return mockListings.filter((l) => l.sellerId === sellerId);
+    },
   },
 
   hubs: {
