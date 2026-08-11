@@ -120,7 +120,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body>
+      <body className="pb-16 md:pb-0">
         {children}
         <Scripts />
       </body>
