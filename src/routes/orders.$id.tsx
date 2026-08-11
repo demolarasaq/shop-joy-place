@@ -65,12 +65,18 @@ function OrderDetail() {
 
   const release = async () => {
     await api.orders.release(order.id);
+    toast.success("Funds released", {
+      description: "The seller will receive the hammer price within 24 hours.",
+    });
     refresh();
   };
   const dispute = async () => {
     if (!reason.trim()) return;
     await api.orders.dispute(order.id, reason.trim());
     setShowDispute(false);
+    toast.success("Dispute opened", {
+      description: "Our team will review the evidence and contact you.",
+    });
     refresh();
   };
 
