@@ -313,6 +313,58 @@ function Timeline({ order }: { order: Order }) {
   );
 }
 
+function ShipmentTimeline({ order }: { order: Order }) {
+  const steps = [
+    { key: "seller_dropoff", label: "Seller dropped off at hub", icon: Warehouse },
+    { key: "courier_batch", label: "Courier batch to buyer hub", icon: Truck },
+    { key: "hub_arrival", label: "Arrived at buyer hub", icon: Package },
+    { key: "otp_pickup", label: "OTP pickup confirmed", icon: KeyRound },
+  ];
+
+  const activeIdx =
+    order.status === "awaiting_payment"
+      ? -1
+      : order.status === "inspection_window" || order.status === "released" || order.status === "disputed"
+        ? 3
+        : 1;
+
+  return (
+    <div className="surface-glass rounded-2xl p-6">
+      <div className="font-display text-lg font-semibold">Shipment timeline</div>
+      <ol className="mt-4 space-y-4">
+        {steps.map((s, i) => {
+          const done = i <= activeIdx;
+          const active = i === activeIdx;
+          return (
+            <li key={s.key} className="flex items-start gap-3">
+              <div
+                className={
+                  "mt-0.5 grid h-8 w-8 place-items-center rounded-full border " +
+                  (done
+                    ? active
+                      ? "border-primary/50 bg-primary/20 text-primary-glow"
+                      : "border-trust/40 bg-trust/20 text-trust"
+                    : "border-border bg-surface text-muted-foreground")
+                }
+              >
+                <s.icon className="h-4 w-4" />
+              </div>
+              <div className="flex-1">
+                <div className={"text-sm " + (active ? "font-semibold" : "font-medium")}>
+                  {s.label}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  {done ? (active ? "Ready for pickup" : "Completed") : "Pending"}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 function StatusBadge({ status }: { status: EscrowStatus }) {
   const map: Record<EscrowStatus, { label: string; cls: string }> = {
     awaiting_payment: { label: "Awaiting payment", cls: "bg-warning/20 text-warning" },
