@@ -9,8 +9,11 @@ import {
   KeyRound,
   Landmark,
   MapPin,
+  Package,
   ShieldCheck,
   Timer,
+  Truck,
+  Warehouse,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
