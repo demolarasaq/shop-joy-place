@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -94,8 +95,14 @@ function ListingDetail() {
       navigate({ to: "/auth", search: { redirect: `/listings/${listing.id}` } });
       return;
     }
-    if (bidAmount < minBid) return;
+    if (bidAmount < minBid) {
+      toast.error(`Minimum bid is ${formatNaira(minBid)}`);
+      return;
+    }
     setPlaced({ amount: bidAmount });
+    toast.success(`Bid placed: ${formatNaira(bidAmount)}`, {
+      description: "A 5% bid-lock is held on your account.",
+    });
   };
 
   return (

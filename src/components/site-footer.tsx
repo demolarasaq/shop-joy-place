@@ -30,9 +30,9 @@ export function SiteFooter() {
         <FooterCol
           title="Company"
           links={[
-            { to: "/", label: "About" },
-            { to: "/", label: "Privacy (NDPA)" },
-            { to: "/", label: "Terms" },
+            { to: "/trust", label: "About & trust" },
+            { to: "/privacy", label: "Privacy (NDPA)" },
+            { to: "/terms", label: "Terms" },
           ]}
         />
       </div>

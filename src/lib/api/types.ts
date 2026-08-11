@@ -34,6 +34,17 @@ export interface Listing {
   videoUrl?: string; // inventory-check walkthrough video
 }
 
+export interface CreateListingInput {
+  title: string;
+  category: string;
+  reservePrice: number;
+  hubCity: string;
+  coverColor: string;
+  images: string[];
+  videoUrl?: string;
+  publish: boolean;
+}
+
 export type EscrowStatus =
   | "awaiting_payment"
   | "funded"

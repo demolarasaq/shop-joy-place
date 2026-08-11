@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Building2,
@@ -77,11 +78,17 @@ function CheckoutPage() {
     await new Promise((r) => setTimeout(r, 900));
     const updated = await api.orders.markPaid(order.id);
     setPaying(false);
+    toast.success("Payment confirmed", {
+      description: "Funds are now in escrow. Inspect the item before releasing.",
+    });
     navigate({ to: "/orders/$id", params: { id: updated.id } });
   };
 
   const copy = (v: string) => {
-    if (typeof navigator !== "undefined") navigator.clipboard?.writeText(v);
+    if (typeof navigator !== "undefined") {
+      navigator.clipboard?.writeText(v);
+      toast.success("Copied to clipboard");
+    }
   };
 
   return (

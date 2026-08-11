@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -9,8 +10,11 @@ import {
   KeyRound,
   Landmark,
   MapPin,
+  Package,
   ShieldCheck,
   Timer,
+  Truck,
+  Warehouse,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -61,12 +65,18 @@ function OrderDetail() {
 
   const release = async () => {
     await api.orders.release(order.id);
+    toast.success("Funds released", {
+      description: "The seller will receive the hammer price within 24 hours.",
+    });
     refresh();
   };
   const dispute = async () => {
     if (!reason.trim()) return;
     await api.orders.dispute(order.id, reason.trim());
     setShowDispute(false);
+    toast.success("Dispute opened", {
+      description: "Our team will review the evidence and contact you.",
+    });
     refresh();
   };
 
@@ -99,6 +109,7 @@ function OrderDetail() {
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             <Timeline order={order} />
+            <ShipmentTimeline order={order} />
 
             {order.status === "inspection_window" && order.releaseDueAt && (
               <InspectionPanel
@@ -299,6 +310,58 @@ function Timeline({ order }: { order: Order }) {
                 </div>
                 <div className="text-[11px] text-muted-foreground">
                   {s.at ? new Date(s.at).toLocaleString() : "—"}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
+function ShipmentTimeline({ order }: { order: Order }) {
+  const steps = [
+    { key: "seller_dropoff", label: "Seller dropped off at hub", icon: Warehouse },
+    { key: "courier_batch", label: "Courier batch to buyer hub", icon: Truck },
+    { key: "hub_arrival", label: "Arrived at buyer hub", icon: Package },
+    { key: "otp_pickup", label: "OTP pickup confirmed", icon: KeyRound },
+  ];
+
+  const activeIdx =
+    order.status === "awaiting_payment"
+      ? -1
+      : order.status === "inspection_window" || order.status === "released" || order.status === "disputed"
+        ? 3
+        : 1;
+
+  return (
+    <div className="surface-glass rounded-2xl p-6">
+      <div className="font-display text-lg font-semibold">Shipment timeline</div>
+      <ol className="mt-4 space-y-4">
+        {steps.map((s, i) => {
+          const done = i <= activeIdx;
+          const active = i === activeIdx;
+          return (
+            <li key={s.key} className="flex items-start gap-3">
+              <div
+                className={
+                  "mt-0.5 grid h-8 w-8 place-items-center rounded-full border " +
+                  (done
+                    ? active
+                      ? "border-primary/50 bg-primary/20 text-primary-glow"
+                      : "border-trust/40 bg-trust/20 text-trust"
+                    : "border-border bg-surface text-muted-foreground")
+                }
+              >
+                <s.icon className="h-4 w-4" />
+              </div>
+              <div className="flex-1">
+                <div className={"text-sm " + (active ? "font-semibold" : "font-medium")}>
+                  {s.label}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  {done ? (active ? "Ready for pickup" : "Completed") : "Pending"}
                 </div>
               </div>
             </li>

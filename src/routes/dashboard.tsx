@@ -98,14 +98,14 @@ function tilesFor(role: string) {
     { title: "My bids", desc: "Track your active and won auctions.", icon: Gavel, to: "/browse" as const },
   ];
   const seller = [
-    { title: "My listings", desc: "Draft, active, sold. Withdraw any time.", icon: ClipboardList, to: "/dashboard" as const },
-    { title: "Create listing", desc: "Upload item video + serial photo.", icon: Gavel, to: "/dashboard" as const },
-    { title: "Payouts", desc: "Escrow releases after buyer approval.", icon: ShieldCheck, to: "/dashboard" as const },
+    { title: "My listings", desc: "Draft, active, sold. Withdraw any time.", icon: ClipboardList, to: "/listings/new" as const },
+    { title: "Create listing", desc: "Upload item video + serial photo.", icon: Gavel, to: "/listings/new" as const },
+    { title: "Payouts", desc: "Escrow releases after buyer approval.", icon: ShieldCheck, to: "/orders" as const },
   ];
   const admin = [
-    { title: "Verifications", desc: "Review pending NIN/BVN + liveness.", icon: BadgeCheck, to: "/dashboard" as const },
-    { title: "Escrow pipeline", desc: "Funded, inspecting, disputed, released.", icon: ShieldCheck, to: "/dashboard" as const },
-    { title: "Users & hubs", desc: "Manage accounts, freezes, hub network.", icon: Users, to: "/dashboard" as const },
+    { title: "Verifications", desc: "Review pending NIN/BVN + liveness.", icon: BadgeCheck, to: "/admin" as const },
+    { title: "Escrow pipeline", desc: "Funded, inspecting, disputed, released.", icon: ShieldCheck, to: "/admin" as const },
+    { title: "Users & hubs", desc: "Manage accounts, freezes, hub network.", icon: Users, to: "/admin" as const },
   ];
   return role === "seller" ? seller : role === "admin" ? admin : buyer;
 }
