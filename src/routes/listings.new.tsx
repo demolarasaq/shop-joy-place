@@ -89,9 +89,14 @@ function Page() {
     setSaving(true);
     try {
       const listing = await api.listings.create(form);
+      toast.success(form.publish ? "Listing published" : "Draft saved", {
+        description: listing.title,
+      });
       navigate({ to: "/listings/$id", params: { id: listing.id } });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create listing.");
+      const msg = err instanceof Error ? err.message : "Failed to create listing.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
