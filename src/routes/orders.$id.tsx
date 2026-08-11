@@ -102,6 +102,7 @@ function OrderDetail() {
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             <Timeline order={order} />
+            <ShipmentTimeline order={order} />
 
             {order.status === "inspection_window" && order.releaseDueAt && (
               <InspectionPanel
