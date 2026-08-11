@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrustRouteImport } from './routes/trust'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SellersRouteImport } from './routes/sellers'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as HubsRouteImport } from './routes/hubs'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -28,6 +30,11 @@ const TrustRoute = TrustRouteImport.update({
   path: '/trust',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -36,6 +43,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SellersRoute = SellersRouteImport.update({
   id: '/sellers',
   path: '/sellers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HubsRoute = HubsRouteImport.update({
@@ -96,8 +108,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/how-it-works': typeof HowItWorksRoute
   '/hubs': typeof HubsRoute
+  '/privacy': typeof PrivacyRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -111,8 +125,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/how-it-works': typeof HowItWorksRoute
   '/hubs': typeof HubsRoute
+  '/privacy': typeof PrivacyRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -127,8 +143,10 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/how-it-works': typeof HowItWorksRoute
   '/hubs': typeof HubsRoute
+  '/privacy': typeof PrivacyRoute
   '/sellers': typeof SellersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -144,8 +162,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/how-it-works'
     | '/hubs'
+    | '/privacy'
     | '/sellers'
     | '/sitemap.xml'
+    | '/terms'
     | '/trust'
     | '/checkout/$listingId'
     | '/listings/$id'
@@ -159,8 +179,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/how-it-works'
     | '/hubs'
+    | '/privacy'
     | '/sellers'
     | '/sitemap.xml'
+    | '/terms'
     | '/trust'
     | '/checkout/$listingId'
     | '/listings/$id'
@@ -174,8 +196,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/how-it-works'
     | '/hubs'
+    | '/privacy'
     | '/sellers'
     | '/sitemap.xml'
+    | '/terms'
     | '/trust'
     | '/checkout/$listingId'
     | '/listings/$id'
@@ -190,8 +214,10 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HowItWorksRoute: typeof HowItWorksRoute
   HubsRoute: typeof HubsRoute
+  PrivacyRoute: typeof PrivacyRoute
   SellersRoute: typeof SellersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   CheckoutListingIdRoute: typeof CheckoutListingIdRoute
   ListingsIdRoute: typeof ListingsIdRoute
@@ -208,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrustRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -220,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/sellers'
       fullPath: '/sellers'
       preLoaderRoute: typeof SellersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hubs': {
@@ -302,8 +342,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HowItWorksRoute: HowItWorksRoute,
   HubsRoute: HubsRoute,
+  PrivacyRoute: PrivacyRoute,
   SellersRoute: SellersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   CheckoutListingIdRoute: CheckoutListingIdRoute,
   ListingsIdRoute: ListingsIdRoute,
