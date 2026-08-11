@@ -22,6 +22,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as ListingsNewRouteImport } from './routes/listings.new'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as CheckoutListingIdRouteImport } from './routes/checkout.$listingId'
 
@@ -90,6 +91,11 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
   path: '/orders/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ListingsNewRoute = ListingsNewRouteImport.update({
+  id: '/listings/new',
+  path: '/listings/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ListingsIdRoute = ListingsIdRouteImport.update({
   id: '/listings/$id',
   path: '/listings/$id',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/trust': typeof TrustRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/listings/$id': typeof ListingsIdRoute
+  '/listings/new': typeof ListingsNewRoute
   '/orders/$id': typeof OrdersIdRoute
   '/orders/': typeof OrdersIndexRoute
 }
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/trust': typeof TrustRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/listings/$id': typeof ListingsIdRoute
+  '/listings/new': typeof ListingsNewRoute
   '/orders/$id': typeof OrdersIdRoute
   '/orders': typeof OrdersIndexRoute
 }
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/trust': typeof TrustRoute
   '/checkout/$listingId': typeof CheckoutListingIdRoute
   '/listings/$id': typeof ListingsIdRoute
+  '/listings/new': typeof ListingsNewRoute
   '/orders/$id': typeof OrdersIdRoute
   '/orders/': typeof OrdersIndexRoute
 }
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/checkout/$listingId'
     | '/listings/$id'
+    | '/listings/new'
     | '/orders/$id'
     | '/orders/'
   fileRoutesByTo: FileRoutesByTo
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/checkout/$listingId'
     | '/listings/$id'
+    | '/listings/new'
     | '/orders/$id'
     | '/orders'
   id:
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/checkout/$listingId'
     | '/listings/$id'
+    | '/listings/new'
     | '/orders/$id'
     | '/orders/'
   fileRoutesById: FileRoutesById
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   TrustRoute: typeof TrustRoute
   CheckoutListingIdRoute: typeof CheckoutListingIdRoute
   ListingsIdRoute: typeof ListingsIdRoute
+  ListingsNewRoute: typeof ListingsNewRoute
   OrdersIdRoute: typeof OrdersIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
 }
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/listings/new': {
+      id: '/listings/new'
+      path: '/listings/new'
+      fullPath: '/listings/new'
+      preLoaderRoute: typeof ListingsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/listings/$id': {
       id: '/listings/$id'
       path: '/listings/$id'
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrustRoute: TrustRoute,
   CheckoutListingIdRoute: CheckoutListingIdRoute,
   ListingsIdRoute: ListingsIdRoute,
+  ListingsNewRoute: ListingsNewRoute,
   OrdersIdRoute: OrdersIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
 }
