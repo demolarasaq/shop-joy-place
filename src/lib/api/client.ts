@@ -1,7 +1,7 @@
 // Mock API client. Same surface the real Python backend will expose.
 // Swap the bodies of these functions for `fetch(...)` calls when the backend is live.
 
-import type { Hub, Listing, Order, Session, UserRole } from "./types";
+import type { CreateListingInput, Hub, Listing, Order, Session, UserRole } from "./types";
 
 const SESSION_KEY = "sabihub.session.v1";
 const ORDERS_KEY = "sabihub.orders.v1";
