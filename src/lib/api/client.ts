@@ -2,6 +2,7 @@
 // database through TanStack server functions (see src/lib/sabihub.functions.ts).
 
 import { supabase } from "@/integrations/supabase/client";
+import { setAccessToken } from "@/lib/auth-token";
 import {
   adminDecideVerification,
   adminListVerifications,
@@ -57,7 +58,8 @@ function refreshSession(): Promise<Session | null> {
 }
 
 if (typeof window !== "undefined") {
-  supabase.auth.onAuthStateChange((event) => {
+  supabase.auth.onAuthStateChange((event, session) => {
+    setAccessToken(session?.access_token ?? null);
     if (event === "TOKEN_REFRESHED") return;
     // Never call supabase.auth.* synchronously inside this callback — it deadlocks
     // the auth lock and server calls then go out without a bearer token.
