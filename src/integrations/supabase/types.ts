@@ -14,16 +14,332 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          id: string
+          listing_id: string
+          placed_at: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          id?: string
+          listing_id: string
+          placed_at?: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          id?: string
+          listing_id?: string
+          placed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hubs: {
+        Row: {
+          address: string
+          city: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      listings: {
+        Row: {
+          bid_count: number
+          category: string
+          cover_color: string
+          created_at: string
+          current_bid: number
+          ends_at: string
+          hub_city: string
+          id: string
+          images: string[]
+          reserve_price: number
+          seller_id: string | null
+          seller_name: string
+          seller_verified: boolean
+          status: string
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          bid_count?: number
+          category: string
+          cover_color?: string
+          created_at?: string
+          current_bid: number
+          ends_at: string
+          hub_city: string
+          id?: string
+          images?: string[]
+          reserve_price: number
+          seller_id?: string | null
+          seller_name: string
+          seller_verified?: boolean
+          status?: string
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          bid_count?: number
+          category?: string
+          cover_color?: string
+          created_at?: string
+          current_bid?: number
+          ends_at?: string
+          hub_city?: string
+          id?: string
+          images?: string[]
+          reserve_price?: number
+          seller_id?: string | null
+          seller_name?: string
+          seller_verified?: boolean
+          status?: string
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          buyer_id: string
+          buyer_protection_fee: number
+          created_at: string
+          dispute_reason: string | null
+          disputed_at: string | null
+          funded_at: string | null
+          hub_city: string
+          id: string
+          listing_id: string
+          listing_title: string
+          release_due_at: string | null
+          released_at: string | null
+          seller_id: string | null
+          seller_name: string
+          status: string
+          total_due: number
+          updated_at: string
+          virtual_account_bank: string
+          virtual_account_name: string
+          virtual_account_number: string
+          winning_bid: number
+        }
+        Insert: {
+          buyer_id: string
+          buyer_protection_fee: number
+          created_at?: string
+          dispute_reason?: string | null
+          disputed_at?: string | null
+          funded_at?: string | null
+          hub_city: string
+          id?: string
+          listing_id: string
+          listing_title: string
+          release_due_at?: string | null
+          released_at?: string | null
+          seller_id?: string | null
+          seller_name: string
+          status?: string
+          total_due: number
+          updated_at?: string
+          virtual_account_bank: string
+          virtual_account_name: string
+          virtual_account_number: string
+          winning_bid: number
+        }
+        Update: {
+          buyer_id?: string
+          buyer_protection_fee?: number
+          created_at?: string
+          dispute_reason?: string | null
+          disputed_at?: string | null
+          funded_at?: string | null
+          hub_city?: string
+          id?: string
+          listing_id?: string
+          listing_title?: string
+          release_due_at?: string | null
+          released_at?: string | null
+          seller_id?: string | null
+          seller_name?: string
+          status?: string
+          total_due?: number
+          updated_at?: string
+          virtual_account_bank?: string
+          virtual_account_name?: string
+          virtual_account_number?: string
+          winning_bid?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          frozen: boolean
+          id: string
+          probation_until: string | null
+          tier: number
+          updated_at: string
+          verification_status: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          frozen?: boolean
+          id: string
+          probation_until?: string | null
+          tier?: number
+          updated_at?: string
+          verification_status?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          frozen?: boolean
+          id?: string
+          probation_until?: string | null
+          tier?: number
+          updated_at?: string
+          verification_status?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          id: string
+          status: string
+          tier: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          tier?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          tier?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      place_bid: {
+        Args: { _amount: number; _bidder: string; _listing_id: string }
+        Returns: {
+          bid_count: number
+          category: string
+          cover_color: string
+          created_at: string
+          current_bid: number
+          ends_at: string
+          hub_city: string
+          id: string
+          images: string[]
+          reserve_price: number
+          seller_id: string | null
+          seller_name: string
+          seller_verified: boolean
+          status: string
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "listings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "buyer" | "seller" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +466,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["buyer", "seller", "admin"],
+    },
   },
 } as const
