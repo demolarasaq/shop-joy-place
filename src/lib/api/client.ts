@@ -41,13 +41,21 @@ async function loadSession(): Promise<Session | null> {
     cachedSession = null;
     return null;
   }
-  try {
-    cachedSession = await fetchSession();
-  } catch {
-    cachedSession = null;
+  setAccessToken(data.session.access_token);
+  // The very first call can land while the auth lock is still held, so the
+  // request goes out unauthenticated. Retry briefly before giving up.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      cachedSession = await fetchSession();
+      return cachedSession;
+    } catch {
+      await new Promise((r) => setTimeout(r, 250));
+    }
   }
+  cachedSession = null;
   return cachedSession;
 }
+
 
 function refreshSession(): Promise<Session | null> {
   sessionPromise = loadSession().then((s) => {
