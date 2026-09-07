@@ -35,8 +35,8 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
 
-  const signOut = () => {
-    api.auth.signOut();
+  const signOut = async () => {
+    await api.auth.signOut();
     navigate({ to: "/" });
   };
 

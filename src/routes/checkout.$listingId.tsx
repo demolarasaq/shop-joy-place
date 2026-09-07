@@ -37,15 +37,16 @@ function CheckoutPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const s = api.auth.getSession();
-    if (!s) {
-      navigate({ to: "/auth", search: { redirect: `/checkout/${listingId}` } });
-      return;
-    }
-    api.orders
-      .createFromListing(listingId, s.userId)
-      .then(setOrder)
-      .catch((e: Error) => setError(e.message));
+    api.auth.ready().then((s) => {
+      if (!s) {
+        navigate({ to: "/auth", search: { redirect: `/checkout/${listingId}` } });
+        return;
+      }
+      api.orders
+        .createFromListing(listingId, s.userId)
+        .then(setOrder)
+        .catch((e: Error) => setError(e.message));
+    });
   }, [listingId, navigate]);
 
   if (error) {

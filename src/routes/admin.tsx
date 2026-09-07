@@ -15,8 +15,9 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { useSession } from "@/lib/api/use-session";
+import { useAuthState } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
+import { toast } from "sonner";
 import { formatNaira } from "@/lib/format";
 import type { Order } from "@/lib/api/types";
 
@@ -35,18 +36,21 @@ const tabs = ["verifications", "escrow", "listings", "users", "hubs"] as const;
 type Tab = (typeof tabs)[number];
 
 function Page() {
-  const session = useSession();
+  const { session, loading } = useAuthState();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("verifications");
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !api.auth.getSession()) {
+    if (loading) return;
+    if (!session) {
       navigate({ to: "/auth", search: { redirect: "/admin" } });
       return;
     }
-    api.orders.list().then(setOrders);
-  }, [navigate]);
+    if (session.role === "admin") {
+      api.orders.list().then(setOrders).catch(() => setOrders([]));
+    }
+  }, [loading, session, navigate]);
 
   if (!session) return null;
   if (session.role !== "admin") {
@@ -121,11 +125,29 @@ function Page() {
 }
 
 function VerificationsTab() {
-  const requests = [
-    { id: "V-001", name: "Tunde M.", type: "BVN + Liveness", status: "pending", submitted: "2 hrs ago" },
-    { id: "V-002", name: "Ngozi A.", type: "NIN + Liveness", status: "approved", submitted: "1 day ago" },
-    { id: "V-003", name: "Kelechi B.", type: "BVN", status: "rejected", submitted: "3 days ago" },
-  ];
+  const [requests, setRequests] = useState<
+    Awaited<ReturnType<typeof api.admin.verifications>>
+  >([]);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = () => api.admin.verifications().then(setRequests).catch(() => setRequests([]));
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const decide = async (id: string, decision: "approve" | "reject") => {
+    setBusy(id);
+    try {
+      await api.admin.decideVerification(id, decision);
+      toast.success(decision === "approve" ? "Account verified" : "Request rejected");
+      await load();
+    } catch {
+      toast.error("Could not save that decision");
+    } finally {
+      setBusy(null);
+    }
+  };
 
   return (
     <div className="surface-glass rounded-2xl p-6">
@@ -133,22 +155,43 @@ function VerificationsTab() {
         <BadgeCheck className="h-4 w-4 text-primary-glow" /> Verification queue
       </div>
       <div className="mt-4 divide-y divide-border">
+        {requests.length === 0 && (
+          <div className="py-8 text-center text-sm text-muted-foreground">
+            No verification requests yet.
+          </div>
+        )}
         {requests.map((r) => (
           <div key={r.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
             <div>
-              <div className="font-medium">{r.name}</div>
+              <div className="font-medium">Tier {r.tier} request</div>
               <div className="text-sm text-muted-foreground">
-                {r.type} • {r.submitted}
+                {r.userId.slice(0, 8)} • {new Date(r.createdAt).toLocaleString()}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <StatusBadge status={r.status as "pending" | "approved" | "rejected"} />
+              <StatusBadge
+                status={
+                  r.status === "verified"
+                    ? "approved"
+                    : r.status === "rejected"
+                      ? "rejected"
+                      : "pending"
+                }
+              />
               {r.status === "pending" && (
                 <>
-                  <button className="rounded-lg bg-trust/10 p-2 text-trust hover:bg-trust/20">
+                  <button
+                    disabled={busy === r.id}
+                    onClick={() => decide(r.id, "approve")}
+                    className="rounded-lg bg-trust/10 p-2 text-trust hover:bg-trust/20 disabled:opacity-50"
+                  >
                     <CheckCircle2 className="h-4 w-4" />
                   </button>
-                  <button className="rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20">
+                  <button
+                    disabled={busy === r.id}
+                    onClick={() => decide(r.id, "reject")}
+                    className="rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20 disabled:opacity-50"
+                  >
                     <XCircle className="h-4 w-4" />
                   </button>
                 </>
