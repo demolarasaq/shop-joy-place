@@ -77,7 +77,7 @@ export const api = {
       return sessionPromise!;
     },
     async signUp(email: string, password: string, displayName: string) {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -87,6 +87,7 @@ export const api = {
       });
       if (error) throw new Error(error.message);
       await refreshSession();
+      return { needsEmailConfirmation: !data.session };
     },
     async signIn(email: string, password: string) {
       const { error } = await supabase.auth.signInWithPassword({ email, password });

@@ -36,7 +36,20 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        await api.auth.signUp(email.trim(), password, displayName.trim() || "Sabihub user");
+        const { needsEmailConfirmation } = await api.auth.signUp(
+          email.trim(),
+          password,
+          displayName.trim() || "Sabihub user",
+        );
+        if (needsEmailConfirmation) {
+          toast.success("Check your email", {
+            description: "We sent you a link to confirm your address, then you can sign in.",
+          });
+          setMode("signin");
+          setPassword("");
+          setBusy(false);
+          return;
+        }
         toast.success("Account created", { description: "Welcome to Sabihub." });
       } else {
         await api.auth.signIn(email.trim(), password);
