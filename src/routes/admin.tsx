@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { useSession } from "@/lib/api/use-session";
+import { useAuthState } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
 import { formatNaira } from "@/lib/format";
 import type { Order } from "@/lib/api/types";
@@ -35,18 +35,21 @@ const tabs = ["verifications", "escrow", "listings", "users", "hubs"] as const;
 type Tab = (typeof tabs)[number];
 
 function Page() {
-  const session = useSession();
+  const { session, loading } = useAuthState();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("verifications");
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !api.auth.getSession()) {
+    if (loading) return;
+    if (!session) {
       navigate({ to: "/auth", search: { redirect: "/admin" } });
       return;
     }
-    api.orders.list().then(setOrders);
-  }, [navigate]);
+    if (session.role === "admin") {
+      api.orders.list().then(setOrders).catch(() => setOrders([]));
+    }
+  }, [loading, session, navigate]);
 
   if (!session) return null;
   if (session.role !== "admin") {

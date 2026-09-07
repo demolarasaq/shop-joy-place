@@ -49,11 +49,13 @@ function OrderDetail() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!api.auth.getSession()) {
-      navigate({ to: "/auth", search: { redirect: `/orders/${id}` } });
-      return;
-    }
-    refresh();
+    api.auth.ready().then((s) => {
+      if (!s) {
+        navigate({ to: "/auth", search: { redirect: `/orders/${id}` } });
+        return;
+      }
+      refresh();
+    });
     const onChange = () => refresh();
     window.addEventListener("sabihub:orders", onChange);
     return () => window.removeEventListener("sabihub:orders", onChange);

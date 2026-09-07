@@ -33,15 +33,18 @@ function OrdersList() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!api.auth.getSession()) {
-      navigate({ to: "/auth", search: { redirect: "/orders" } });
-      return;
-    }
-    const load = () => api.orders.list().then((o) => {
-      setOrders(o);
-      setLoaded(true);
+    const load = () =>
+      api.orders.list().then((o) => {
+        setOrders(o);
+        setLoaded(true);
+      });
+    api.auth.ready().then((s) => {
+      if (!s) {
+        navigate({ to: "/auth", search: { redirect: "/orders" } });
+        return;
+      }
+      load();
     });
-    load();
     window.addEventListener("sabihub:orders", load);
     return () => window.removeEventListener("sabihub:orders", load);
   }, [navigate]);

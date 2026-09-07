@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { useSession } from "@/lib/api/use-session";
+import { useAuthState } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
 
 export const Route = createFileRoute("/dashboard")({
@@ -25,15 +25,14 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const session = useSession();
+  const { session, loading } = useAuthState();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Client-side gate: no backend to check, so we redirect on the client only.
-    if (typeof window !== "undefined" && !api.auth.getSession()) {
+    if (!loading && !session) {
       navigate({ to: "/auth", search: { redirect: "/dashboard" } });
     }
-  }, [navigate]);
+  }, [loading, session, navigate]);
 
   if (!session) return null;
 
