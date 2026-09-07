@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { useSession } from "@/lib/api/use-session";
+import { useAuthState } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
 import { formatNaira } from "@/lib/format";
 import type { CreateListingInput } from "@/lib/api/types";
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/listings/new")({
 });
 
 function Page() {
-  const session = useSession();
+  const { session, loading: sessionLoading } = useAuthState();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +67,8 @@ function Page() {
     publish: true,
   });
 
-  const canList = session?.role === "seller" || session?.role === "admin";
+  const canList =
+    sessionLoading || session?.role === "seller" || session?.role === "admin";
 
   const addSampleMedia = () => {
     const seed = Math.floor(Math.random() * 1000);
