@@ -30,7 +30,6 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("[dbg] dash", loading, session);
     if (!loading && !session) {
       navigate({ to: "/auth", search: { redirect: "/dashboard" } });
     }

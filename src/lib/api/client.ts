@@ -42,8 +42,7 @@ async function loadSession(): Promise<Session | null> {
   }
   try {
     cachedSession = await fetchSession();
-  } catch (err) {
-    console.error("[sabihub] session load failed", err);
+  } catch {
     cachedSession = null;
   }
   return cachedSession;
@@ -60,7 +59,11 @@ function refreshSession(): Promise<Session | null> {
 if (typeof window !== "undefined") {
   supabase.auth.onAuthStateChange((event) => {
     if (event === "TOKEN_REFRESHED") return;
-    refreshSession();
+    // Never call supabase.auth.* synchronously inside this callback — it deadlocks
+    // the auth lock and server calls then go out without a bearer token.
+    setTimeout(() => {
+      refreshSession();
+    }, 0);
   });
 }
 
