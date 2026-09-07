@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Gavel,
   ShieldCheck,
@@ -13,6 +13,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useAuthState } from "@/lib/api/use-session";
 import { api } from "@/lib/api/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -80,12 +81,88 @@ function Dashboard() {
           ))}
         </div>
 
-        <div className="mt-10 rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-          More screens ship in the next stages: browse & bid, escrow checkout, hub pickup with OTP,
-          disputes, and the ops console.
-        </div>
+        <AccountActions
+          role={session.role}
+          verificationStatus={session.verificationStatus}
+        />
       </section>
       <SiteFooter />
+    </div>
+  );
+}
+
+function AccountActions({
+  role,
+  verificationStatus,
+}: {
+  role: string;
+  verificationStatus: string;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const startSelling = async () => {
+    setBusy(true);
+    try {
+      await api.auth.becomeSeller();
+      toast.success("Selling switched on", {
+        description: "Your seller tools are now on this dashboard.",
+      });
+    } catch {
+      toast.error("Could not switch on selling");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const verify = async () => {
+    setBusy(true);
+    try {
+      await api.auth.requestVerification(1);
+      toast.success("Verification requested", {
+        description: "Our team reviews new accounts within one business day.",
+      });
+    } catch {
+      toast.error("Could not send that request");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-10 grid gap-4 md:grid-cols-2">
+      <div className="surface-glass rounded-2xl p-6">
+        <div className="font-display text-lg font-semibold">Identity verification</div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Status: <span className="text-foreground">{verificationStatus}</span>. Verified accounts
+          can bid without limits and list items for sale.
+        </p>
+        <button
+          onClick={verify}
+          disabled={busy || verificationStatus === "verified" || verificationStatus === "pending"}
+          className="bg-gradient-trust mt-4 rounded-xl px-4 py-2 text-sm font-medium text-trust-foreground disabled:opacity-50"
+        >
+          {verificationStatus === "verified"
+            ? "Verified"
+            : verificationStatus === "pending"
+              ? "Under review"
+              : "Request verification"}
+        </button>
+      </div>
+
+      <div className="surface-glass rounded-2xl p-6">
+        <div className="font-display text-lg font-semibold">Sell on Sabihub</div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Turn on selling to create listings, drop items at a hub, and get paid after the buyer
+          approves.
+        </p>
+        <button
+          onClick={startSelling}
+          disabled={busy || role !== "buyer"}
+          className="bg-gradient-primary mt-4 rounded-xl px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+        >
+          {role === "buyer" ? "Start selling" : "Selling enabled"}
+        </button>
+      </div>
     </div>
   );
 }
