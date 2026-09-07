@@ -2,6 +2,7 @@
 // database through TanStack server functions (see src/lib/sabihub.functions.ts).
 
 import { supabase } from "@/integrations/supabase/client";
+import { setAccessToken } from "@/lib/auth-token";
 import {
   adminDecideVerification,
   adminListVerifications,
@@ -40,13 +41,21 @@ async function loadSession(): Promise<Session | null> {
     cachedSession = null;
     return null;
   }
-  try {
-    cachedSession = await fetchSession();
-  } catch {
-    cachedSession = null;
+  setAccessToken(data.session.access_token);
+  // The very first call can land while the auth lock is still held, so the
+  // request goes out unauthenticated. Retry briefly before giving up.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      cachedSession = await fetchSession();
+      return cachedSession;
+    } catch {
+      await new Promise((r) => setTimeout(r, 250));
+    }
   }
+  cachedSession = null;
   return cachedSession;
 }
+
 
 function refreshSession(): Promise<Session | null> {
   sessionPromise = loadSession().then((s) => {
@@ -57,9 +66,14 @@ function refreshSession(): Promise<Session | null> {
 }
 
 if (typeof window !== "undefined") {
-  supabase.auth.onAuthStateChange((event) => {
+  supabase.auth.onAuthStateChange((event, session) => {
+    setAccessToken(session?.access_token ?? null);
     if (event === "TOKEN_REFRESHED") return;
-    refreshSession();
+    // Never call supabase.auth.* synchronously inside this callback — it deadlocks
+    // the auth lock and server calls then go out without a bearer token.
+    setTimeout(() => {
+      refreshSession();
+    }, 0);
   });
 }
 
