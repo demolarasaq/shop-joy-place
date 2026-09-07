@@ -42,7 +42,8 @@ async function loadSession(): Promise<Session | null> {
   }
   try {
     cachedSession = await fetchSession();
-  } catch {
+  } catch (err) {
+    console.error("[sabihub] session load failed", err);
     cachedSession = null;
   }
   return cachedSession;
