@@ -4,7 +4,6 @@ import { z } from "zod";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api/client";
-import { lovable } from "@/integrations/lovable";
 import { SiteHeader } from "@/components/site-header";
 
 const searchSchema = z.object({
@@ -50,18 +49,6 @@ function AuthPage() {
       });
     } finally {
       setBusy(false);
-    }
-  };
-
-  const google = async () => {
-    try {
-      await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-    } catch (err) {
-      toast.error("Google sign-in failed", {
-        description: err instanceof Error ? err.message : "Please try again.",
-      });
     }
   };
 
@@ -134,17 +121,6 @@ function AuthPage() {
             {mode === "signup" ? "Create account" : "Sign in"}
           </button>
 
-          <div className="relative py-1 text-center text-xs text-muted-foreground">
-            <span className="bg-transparent px-2">or</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={google}
-            className="surface-glass w-full rounded-xl px-5 py-2.5 text-sm font-medium hover:text-primary-glow"
-          >
-            Continue with Google
-          </button>
         </form>
 
         <p className="mt-6 text-sm text-muted-foreground">
