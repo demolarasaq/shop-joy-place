@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -86,11 +86,22 @@ function ListingDetail() {
   const [bidAmount, setBidAmount] = useState<number>(minBid);
   const [placed, setPlaced] = useState<{ amount: number } | null>(null);
 
-  const bids = mockBidHistory(listing.currentBid, listing.bidCount);
+  const queryClient = useQueryClient();
+  const { data: bidRows = [] } = useQuery({
+    queryKey: ["bids", listing.id],
+    queryFn: () => api.listings.bids(listing.id),
+  });
+  const bids = bidRows.map((b) => ({
+    bidder: b.alias,
+    amount: b.amount,
+    when: relativeTime(new Date(b.placedAt).getTime()),
+  }));
 
   const canBid = session && !t.ended;
 
-  const placeBid = () => {
+  const [bidding, setBidding] = useState(false);
+
+  const placeBid = async () => {
     if (!session) {
       navigate({ to: "/auth", search: { redirect: `/listings/${listing.id}` } });
       return;
@@ -99,10 +110,24 @@ function ListingDetail() {
       toast.error(`Minimum bid is ${formatNaira(minBid)}`);
       return;
     }
-    setPlaced({ amount: bidAmount });
-    toast.success(`Bid placed: ${formatNaira(bidAmount)}`, {
-      description: "A 5% bid-lock is held on your account.",
-    });
+    setBidding(true);
+    try {
+      await api.listings.placeBid(listing.id, bidAmount);
+      setPlaced({ amount: bidAmount });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["listings", listing.id] }),
+        queryClient.invalidateQueries({ queryKey: ["bids", listing.id] }),
+      ]);
+      toast.success(`Bid placed: ${formatNaira(bidAmount)}`, {
+        description: "A 5% bid-lock is held on your account.",
+      });
+    } catch (err) {
+      toast.error("Bid not accepted", {
+        description: err instanceof Error ? err.message : "Please try again.",
+      });
+    } finally {
+      setBidding(false);
+    }
   };
 
   return (
@@ -232,7 +257,7 @@ function ListingDetail() {
                     />
                     <button
                       onClick={placeBid}
-                      disabled={!canBid || bidAmount < minBid}
+                      disabled={!canBid || bidding || bidAmount < minBid}
                       className="bg-gradient-primary inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-glow transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                     >
                       <Gavel className="h-4 w-4" /> {session ? "Place bid" : "Sign in to bid"}
@@ -371,22 +396,6 @@ function TrustTile({
       <div className="font-display text-sm font-semibold">{value}</div>
     </div>
   );
-}
-
-function mockBidHistory(current: number, count: number) {
-  const names = ["Ada", "Tunde", "Ngozi", "Kelechi", "Amina", "Ifeanyi", "Chidi", "Bola", "Zainab"];
-  const rows: { bidder: string; amount: number; when: string }[] = [];
-  let amt = current;
-  const now = Date.now();
-  for (let i = 0; i < Math.min(count, 8); i++) {
-    rows.push({
-      bidder: names[i % names.length] + " " + String.fromCharCode(65 + ((i * 3) % 26)) + ".",
-      amount: amt,
-      when: relativeTime(now - i * (7 * 60 * 1000 + i * 60_000)),
-    });
-    amt = Math.max(0, amt - (5000 + Math.floor(Math.random() * 15000)));
-  }
-  return rows;
 }
 
 function relativeTime(then: number) {
