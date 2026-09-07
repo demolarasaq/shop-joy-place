@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { useSession } from "@/lib/api/use-session";
 
 export const Route = createFileRoute("/sellers")({
   head: () => ({
@@ -90,12 +91,7 @@ function Page() {
             bank-held escrow, and hub-based delivery.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/auth"
-              className="bg-gradient-primary inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow"
-            >
-              Start selling <ArrowRight className="h-4 w-4" />
-            </Link>
+            <StartSellingCta />
             <Link
               to="/how-it-works"
               className="surface-glass inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium"
@@ -149,19 +145,40 @@ function Page() {
                 Ready to list your first item?
               </h2>
               <p className="mt-3 max-w-xl text-muted-foreground">
-                Sign in as a demo seller to create a listing and see the seller dashboard.
+                Turn on selling from your dashboard, then create your first listing.
               </p>
             </div>
-            <Link
-              to="/auth"
-              className="bg-gradient-primary inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow"
-            >
-              Create a listing <ArrowRight className="h-4 w-4" />
-            </Link>
+            <CreateListingCta />
           </div>
         </div>
       </section>
       <SiteFooter />
     </div>
+  );
+}
+
+function StartSellingCta() {
+  const session = useSession();
+  const canSell = session?.role === "seller" || session?.role === "admin";
+  return (
+    <Link
+      to={session ? (canSell ? "/listings/new" : "/dashboard") : "/auth"}
+      className="bg-gradient-primary inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow"
+    >
+      Start selling <ArrowRight className="h-4 w-4" />
+    </Link>
+  );
+}
+
+function CreateListingCta() {
+  const session = useSession();
+  const canSell = session?.role === "seller" || session?.role === "admin";
+  return (
+    <Link
+      to={session ? (canSell ? "/listings/new" : "/dashboard") : "/auth"}
+      className="bg-gradient-primary inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow"
+    >
+      Create a listing <ArrowRight className="h-4 w-4" />
+    </Link>
   );
 }
